@@ -1620,25 +1620,27 @@ div.student-main {
   opacity: 0.07 !important;
 }
 
-/* Student Sidebar: Permanently Docked & Visible */
+/* Student Sidebar: Permanently Docked & Visible - Unified Architecture */
 html body.student-portal-active .student-sidebar,
 html body:has(.student-panel) .student-sidebar,
 .student-sidebar {
   display: flex !important;
   flex-direction: column !important;
-  position: sticky !important;
+  position: fixed !important;
   top: 0 !important;
   left: 0 !important;
+  bottom: 0 !important;
   height: 100vh !important;
   width: 260px !important;
   min-width: 260px !important;
   max-width: 260px !important;
   flex: 0 0 260px !important;
-  z-index: 50 !important;
-  background: #080a0ff8 !important;
-  background-color: #080a0ff8 !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
+  z-index: 999999 !important;
+  background: #080a0f !important;
+  background-color: #080a0f !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
   border-right: 1px solid rgba(168, 230, 46, 0.22) !important;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5) !important;
   transform: translateX(0) !important;
@@ -1656,7 +1658,6 @@ html body:has(.student-panel) .student-sidebar,
 body.sidebar-collapsed .student-sidebar,
 body.student-portal-active.sidebar-collapsed .student-sidebar {
   transform: translateX(-100%) !important;
-  margin-left: -260px !important;
 }
 
 .student-sidebar .student-nav {
@@ -1668,17 +1669,32 @@ body.student-portal-active.sidebar-collapsed .student-sidebar {
 .student-sidebar .student-nav-item,
 .student-sidebar nav button {
   display: flex !important;
-  color: #94a3b8 !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  color: #cbd5e1 !important;
   background: transparent !important;
   border: 1px solid transparent !important;
+  font-size: 13px !important;
+  font-weight: 550 !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
   transition: all 0.2s ease !important;
 }
 
 .student-sidebar .student-nav-item:hover:not(.active),
 .student-sidebar nav button:hover:not(.active) {
   color: #ffffff !important;
-  background: rgba(168, 230, 46, 0.1) !important;
-  border-color: rgba(168, 230, 46, 0.25) !important;
+  background: rgba(168, 230, 46, 0.12) !important;
+  border-color: rgba(168, 230, 46, 0.3) !important;
   transform: translateX(3px) !important;
 }
 
@@ -1702,16 +1718,18 @@ body.student-portal-active.sidebar-collapsed .student-sidebar {
 .student-main {
   flex: 1 1 auto !important;
   min-width: 0 !important;
+  margin-left: 260px !important;
   width: calc(100% - 260px) !important;
-  margin-left: 0 !important;
+  min-height: 100vh !important;
   padding-left: 0 !important;
   background: transparent !important;
   background-color: transparent !important;
-  transition: width 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition: margin-left 0.32s cubic-bezier(0.16, 1, 0.3, 1), width 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 body.sidebar-collapsed .student-main,
 body.student-portal-active.sidebar-collapsed .student-main {
+  margin-left: 0 !important;
   width: 100% !important;
 }
 
@@ -2014,11 +2032,12 @@ html body:has(.organizer-page) .org-sidebar,
   width: 260px !important;
   min-width: 260px !important;
   max-width: 260px !important;
-  z-index: 50 !important;
-  background: #09090cf8 !important;
-  background-color: #09090cf8 !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
+  z-index: 999999 !important;
+  background: #09090c !important;
+  background-color: #09090c !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
   border-right: 1px solid rgba(255, 184, 0, 0.25) !important;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5) !important;
   transform: translateX(0) !important;
@@ -2052,15 +2071,31 @@ body.organizer-portal-active.sidebar-collapsed .org-sidebar {
 }
 
 .org-sidebar .org-nav-item {
-  color: #a1a1aa !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  color: #cbd5e1 !important;
   background: transparent !important;
-  transition: all 0.2s ease !important;
   border: 1px solid transparent !important;
+  font-size: 13px !important;
+  font-weight: 550 !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  transition: all 0.2s ease !important;
 }
 
 .org-sidebar .org-nav-item:hover:not(.active) {
-  background: rgba(255, 184, 0, 0.1) !important;
-  border-color: rgba(255, 184, 0, 0.25) !important;
+  background: rgba(255, 184, 0, 0.12) !important;
+  border-color: rgba(255, 184, 0, 0.3) !important;
   color: #ffffff !important;
   transform: translateX(3px) !important;
 }
@@ -2371,11 +2406,12 @@ html body:has(.admin-app) .admin-sidebar,
   width: 260px !important;
   min-width: 260px !important;
   max-width: 260px !important;
-  z-index: 50 !important;
-  background: #07090ef8 !important;
-  background-color: #07090ef8 !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
+  z-index: 999999 !important;
+  background: #07090e !important;
+  background-color: #07090e !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
   border-right: 1px solid rgba(0, 180, 255, 0.25) !important;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5) !important;
   transform: translateX(0) !important;
@@ -2395,9 +2431,27 @@ body.admin-portal-active.sidebar-collapsed .admin-sidebar {
 }
 
 .admin-sidebar nav button {
-  color: #94a3b8 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  color: #cbd5e1 !important;
   background: transparent !important;
   border: 1px solid transparent !important;
+  font-size: 13px !important;
+  font-weight: 550 !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  transition: all 0.2s ease !important;
+}
   transition: all 0.2s ease !important;
 }
 
@@ -2621,13 +2675,13 @@ html body.student-portal-active .rulebot-input input {
 @media (max-width: 780px) {
   .cc-3lines-trigger {
     left: 14px !important;
-    top: 14px !important;
-    width: 38px !important;
-    height: 38px !important;
-    z-index: 1000000 !important;
+    top: 11px !important;
+    width: 36px !important;
+    height: 36px !important;
+    z-index: 10000001 !important;
   }
 
-  /* Force sidebars off-screen on mobile by default with high specificity */
+  /* Force sidebars off-screen on mobile by default with high specificity & crystal-clear non-blurry render */
   html body.student-portal-active .student-sidebar,
   html body:has(.student-panel) .student-sidebar,
   .student-sidebar,
@@ -2640,12 +2694,30 @@ html body.student-portal-active .rulebot-input input {
     width: 280px !important;
     max-width: 85vw !important;
     height: 100vh !important;
-    z-index: 999999 !important;
+    z-index: 10000000 !important;
     transform: translateX(-100%) !important;
     margin-left: 0 !important;
-    box-shadow: 10px 0 35px rgba(0, 0, 0, 0.85) !important;
+    background: #080a0f !important;
+    background-color: #080a0f !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    filter: none !important;
+    box-shadow: 10px 0 35px rgba(0, 0, 0, 0.95) !important;
     transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
     display: flex !important;
+    isolation: isolate !important;
+  }
+
+  html body.organizer-portal-active .org-sidebar,
+  html body:has(.organizer-page) .org-sidebar {
+    background: #09090c !important;
+    background-color: #09090c !important;
+  }
+
+  html body.admin-portal-active .admin-sidebar,
+  html body:has(.admin-app) .admin-sidebar {
+    background: #07090e !important;
+    background-color: #07090e !important;
   }
 
   /* Slide sidebar into view when active/open */
@@ -2664,16 +2736,23 @@ html body.student-portal-active .rulebot-input input {
     transform: translateX(0) !important;
   }
 
-  body.mobile-sidebar-open::before {
+  /* Backdrop covers only the main content area behind the drawer - ZERO blur on sidebar */
+  body.mobile-sidebar-open .student-main::after,
+  body.mobile-sidebar-open .organizer-main::after,
+  body.mobile-sidebar-open .admin-main::after {
     content: '' !important;
     position: fixed !important;
     inset: 0 !important;
-    background: rgba(0, 0, 0, 0.7) !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
-    z-index: 999990 !important;
+    background: rgba(0, 0, 0, 0.75) !important;
+    z-index: 99999 !important;
     pointer-events: auto !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     animation: fadeInBackdrop 0.2s ease-out forwards;
+  }
+
+  body.mobile-sidebar-open::before {
+    display: none !important;
   }
 
   @keyframes fadeInBackdrop {
@@ -2708,13 +2787,29 @@ html body.student-portal-active .rulebot-input input {
     top: 0 !important;
     height: 58px !important;
     z-index: 1000 !important;
-    background: rgba(8, 10, 15, 0.95) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
+    background: #080a0f !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     border-bottom: 1px solid rgba(168, 230, 46, 0.18) !important;
     padding: 0 14px !important;
     align-items: center !important;
     justify-content: space-between !important;
+  }
+
+  .student-sidebar .student-nav-item,
+  .student-sidebar nav button,
+  .org-sidebar .org-nav-item,
+  .org-sidebar nav button,
+  .admin-sidebar .admin-nav-item,
+  .admin-sidebar nav button {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    padding: 12px 16px !important;
+    color: #e2e8f0 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    filter: none !important;
+    opacity: 1 !important;
   }
 
   .student-topbar,
