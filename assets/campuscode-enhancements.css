@@ -405,6 +405,67 @@ body.landing-flight-active .cc-back-to-top:hover {
   padding: 0;
 }
 
+.cc-brand-logo-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 8px rgba(118, 101, 255, 0.4));
+}
+
+.mw-brand-logo-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 8px rgba(168, 230, 46, 0.45));
+}
+
+/* Official CampusCode Logo Integration across entire platform */
+.official-cc-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.cc-mark,
+.login-brand-mark,
+.register-brand-mark,
+.public-card-brand-mark,
+.public-verify-brand-mark,
+.footer-mark,
+.init-logo {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  background-image: url('/assets/campuscode-logo.png') !important;
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  position: relative !important;
+}
+
+.cc-mark > span,
+.cc-mark > i,
+.login-brand-mark > span,
+.register-brand-mark > i,
+.public-card-brand-mark > i,
+.public-verify-brand-mark > i,
+.footer-mark > span,
+.init-logo > i {
+  display: none !important;
+}
+
+.cc-mark-small {
+  width: 24px !important;
+  height: 24px !important;
+}
+
 .cc-brand-icon {
   display: flex;
   gap: 3px;
@@ -1090,14 +1151,264 @@ body.landing-flight-active .cc-back-to-top:hover {
   text-decoration: underline;
 }
 
-/* responsive */
+/* ==========================================================================
+   RESPONSIVE: ZERO-LAG MOBILE LAYOUT & TABLET OPTIMIZATION
+   Mobile (<= 768px):
+     - WebGL canvas disabled (0% GPU, zero stutter)
+     - 700vh virtual track hidden
+     - Document flows naturally in native vertical scroll
+     - Touch-friendly cards, high contrast obsidian glow backdrop
+   Tablet (769px - 1024px):
+     - Fluid 2-column grids and balanced typography
+   ========================================================================== */
+
 @media (max-width: 768px) {
-  .cc-flight-nav { padding: 0 16px; }
-  .cc-nav-stage-meter { display: none; }
-  .cc-card-grid-3 { grid-template-columns: 1fr; gap: 12px; }
-  .cc-hack-grid { grid-template-columns: 1fr; gap: 12px; }
-  .cc-how-monolith { padding: 20px; }
-  .cc-hero-title { font-size: 42px; }
+  #cc-3d-flight-universe {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow: visible !important;
+    contain: none !important;
+    background: #07080c !important;
+  }
+
+  #cc-flight-scroll-track {
+    display: none !important;
+    height: 0 !important;
+  }
+
+  #cc-flight-sticky-viewport {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    height: auto !important;
+    overflow: visible !important;
+    contain: none !important;
+    will-change: auto !important;
+    perspective: none !important;
+    transform: none !important;
+    background: #07080c !important;
+    background-image: radial-gradient(circle at 50% 8%, rgba(118, 101, 255, 0.16) 0%, transparent 55%),
+                      radial-gradient(circle at 80% 35%, rgba(168, 230, 46, 0.08) 0%, transparent 45%) !important;
+  }
+
+  #cc-flight-canvas {
+    display: none !important;
+  }
+
+  .cc-flight-nav {
+    position: sticky !important;
+    top: 0 !important;
+    height: 58px !important;
+    padding: 0 16px !important;
+    background: rgba(8, 10, 15, 0.94) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    z-index: 1000 !important;
+  }
+
+  .cc-nav-brand {
+    gap: 10px !important;
+  }
+
+  .cc-brand-logo-img {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .cc-brand-text strong {
+    font-size: 13px !important;
+  }
+
+  .cc-brand-text small {
+    font-size: 8px !important;
+  }
+
+  .cc-nav-stage-meter {
+    display: none !important;
+  }
+
+  .cc-nav-actions {
+    gap: 8px !important;
+  }
+
+  .cc-nav-actions .cc-btn {
+    padding: 6px 10px !important;
+    font-size: 10px !important;
+  }
+
+  #cc-flight-stages {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 48px !important;
+    padding: 24px 16px 80px 16px !important;
+    pointer-events: auto !important;
+  }
+
+  .cc-stage {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 0 20px 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    pointer-events: auto !important;
+    contain: none !important;
+    will-change: auto !important;
+  }
+
+  .cc-stage.stage-hidden {
+    display: flex !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  .cc-stage-badge {
+    padding: 5px 12px !important;
+    font-size: 10px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .cc-hero-title {
+    font-size: clamp(34px, 10vw, 44px) !important;
+    line-height: 1.02 !important;
+    margin-bottom: 16px !important;
+  }
+
+  .cc-stage-title {
+    font-size: clamp(26px, 7vw, 36px) !important;
+    line-height: 1.1 !important;
+    margin-bottom: 12px !important;
+  }
+
+  .cc-stage-desc {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+    margin-bottom: 22px !important;
+    padding: 0 4px !important;
+  }
+
+  .cc-hero-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 340px !important;
+    gap: 10px !important;
+  }
+
+  .cc-hero-actions .cc-btn {
+    width: 100% !important;
+    padding: 12px 18px !important;
+    font-size: 12px !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  .cc-card-grid-3 {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    width: 100% !important;
+    margin-top: 8px !important;
+  }
+
+  .cc-comet-card {
+    width: 100% !important;
+    transform: none !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+    background: #0e111a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .cc-video-monolith {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 14px !important;
+  }
+
+  .cc-how-monolith {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 22px 18px !important;
+    border-radius: 14px !important;
+    transform: none !important;
+  }
+
+  .cc-monolith-number {
+    font-size: 24px !important;
+  }
+
+  .cc-monolith-title {
+    font-size: 22px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .cc-monolith-subtitle {
+    font-size: 14px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .cc-monolith-desc {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 16px !important;
+  }
+
+  .cc-hack-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .cc-hack-card {
+    padding: 20px 16px !important;
+    width: 100% !important;
+    transform: none !important;
+  }
+
+  .cc-flight-bottom-hud,
+  .cc-flight-progress-bar {
+    display: none !important;
+  }
+
+  #demo-dropdown-container {
+    bottom: 16px !important;
+    right: 16px !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .cc-flight-nav {
+    padding: 0 20px !important;
+  }
+
+  .cc-card-grid-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  .cc-hack-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  .cc-hero-title {
+    font-size: 54px !important;
+  }
 }
 
 /* student portal styles */

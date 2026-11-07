@@ -74,10 +74,20 @@
       } else {
         flightUniverse.style.display = 'block';
       }
-      attachCardParallaxTilt();
-      if (!isRunning) {
-        isRunning = true;
-        initThreeJS();
+      if (window.innerWidth > 768) {
+        attachCardParallaxTilt();
+        if (!isRunning) {
+          isRunning = true;
+          initThreeJS();
+        }
+      } else {
+        // Mobile zero-lag layout: clear inline transforms so responsive CSS takes over
+        const stages = document.querySelectorAll('#cc-flight-stages .cc-stage');
+        stages.forEach(s => {
+          s.style.transform = '';
+          s.style.opacity = '';
+          s.style.pointerEvents = '';
+        });
       }
     } else {
       document.body.classList.remove('landing-flight-active');
@@ -108,9 +118,7 @@
         <!-- navbar -->
         <header class="cc-flight-nav">
           <button class="cc-nav-brand" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="CampusCode Home">
-            <div class="cc-brand-icon">
-              <span></span><span></span><span></span>
-            </div>
+            <img src="/assets/campuscode-logo.png" alt="CampusCode Logo" class="cc-brand-logo-img" />
             <div class="cc-brand-text">
               <strong>CAMPUSCODE</strong>
               <small>HACKATHON ARENA</small>
@@ -377,6 +385,11 @@
 
   // three.js setup
   function initThreeJS() {
+    if (window.innerWidth <= 768) {
+      // Zero-lag mobile optimization: WebGL disabled on mobile viewports
+      return;
+    }
+
     if (typeof THREE === 'undefined') {
       setTimeout(initThreeJS, 100);
       return;
@@ -526,6 +539,23 @@
 
     // resize handler
     window.addEventListener('resize', () => {
+      if (window.innerWidth <= 768) {
+        // Paused on mobile, clear transforms for clean responsive flow
+        const stages = document.querySelectorAll('#cc-flight-stages .cc-stage');
+        stages.forEach(s => {
+          s.style.transform = '';
+          s.style.opacity = '';
+          s.style.pointerEvents = '';
+        });
+        return;
+      }
+
+      if (!threeScene && !isRunning) {
+        isRunning = true;
+        initThreeJS();
+        return;
+      }
+
       if (!threeCamera || !threeRenderer) return;
       const w2 = viewport.clientWidth || window.innerWidth;
       const h2 = viewport.clientHeight || window.innerHeight;
@@ -541,7 +571,7 @@
   let clock = 0;
   function startRenderLoop() {
     function animate() {
-      if (!isRunning) return;
+      if (!isRunning || window.innerWidth <= 768) return;
       requestAnimationFrame(animate);
 
       // pause rendering when user is on another tab to save 100% CPU/battery
@@ -592,6 +622,8 @@
 
   // card tilt and cursor glare - optimized with rAF throttling & cached bounds
   function attachCardParallaxTilt() {
+    if (window.innerWidth <= 768) return; // Skip on mobile for performance
+
     // general card tilt
     const generalCards = document.querySelectorAll('.cc-how-monolith, .cc-hack-card');
     generalCards.forEach(card => {
@@ -778,9 +810,7 @@
       <!-- Topbar -->
       <header class="mw-topbar">
         <div class="mw-brand">
-          <div class="mw-brand-mark">
-            <span></span><span></span><span></span>
-          </div>
+          <img src="/assets/campuscode-logo.png" alt="CampusCode Logo" class="mw-brand-logo-img" />
           <div class="mw-brand-text">
             <span>CAMPUSCODE</span>
             <small>ARENA OS // QUANTUM RUNTIME</small>
@@ -1082,6 +1112,8 @@
   let lastStageIndexApplied = -1;
 
   function updateStageTransforms(progress) {
+    if (window.innerWidth <= 768) return; // In mobile mode, native vertical document flow handles stages cleanly
+
     if (!cachedStageElements || cachedStageElements.length === 0) {
       cachedStageElements = document.querySelectorAll('#cc-flight-stages .cc-stage');
       if (!cachedStageElements || cachedStageElements.length === 0) return;
@@ -1167,7 +1199,7 @@
 
   // scroll handler
   function onScroll() {
-    if (!flightUniverse || !isRunning) return;
+    if (!flightUniverse || !isRunning || window.innerWidth <= 768) return;
 
     const scrollY = window.scrollY || window.pageYOffset || 0;
     const maxScroll = (document.documentElement.scrollHeight || 7000) - window.innerHeight;
@@ -1181,6 +1213,13 @@
 
   // helper functions
   window.ccFlyTo = function(stageIdx) {
+    if (window.innerWidth <= 768) {
+      const targetStage = document.querySelector(`.cc-stage[data-stage="${stageIdx}"]`);
+      if (targetStage) {
+        targetStage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+    }
     const config = STAGE_CONFIG[stageIdx];
     if (!config) return;
     const maxScroll = (document.documentElement.scrollHeight || 7000) - window.innerHeight;
@@ -1196,6 +1235,16 @@
     hint.textContent = video.muted ? '🔊 CLICK FOR SOUND' : '🔇 CLICK TO MUTE';
   };
 
+  // Official CampusCode logo injector across all portal headers, marks, and sidebars
+  function replaceLogoMarksWithOfficialPNG() {
+    const marks = document.querySelectorAll('.login-brand-mark, .register-brand-mark, .cc-mark, .footer-mark, .init-logo, .public-card-brand-mark, .public-verify-brand-mark');
+    marks.forEach(m => {
+      if (m.dataset.officialLogoReplaced) return;
+      m.dataset.officialLogoReplaced = 'true';
+      m.innerHTML = '<img src="/assets/campuscode-logo.png" alt="CampusCode" class="official-cc-logo-img" style="width:100%;height:100%;object-fit:contain;display:block;" />';
+    });
+  }
+
   // init
   function boot() {
     if (checkPortalInitializing()) return;
@@ -1203,6 +1252,7 @@
     setupHoverSlidebars();
     setupPortalSidebar3Bars();
     filterStudentSidebarItems();
+    replaceLogoMarksWithOfficialPNG();
   }
 
   if (document.readyState === 'loading') {
@@ -1217,10 +1267,12 @@
     checkRoute();
     setupPortalSidebar3Bars();
     filterStudentSidebarItems();
+    replaceLogoMarksWithOfficialPNG();
   });
 
   let lastCheckedPath = null;
   setInterval(() => {
+    replaceLogoMarksWithOfficialPNG();
     if (window.location.pathname.startsWith('/initializing')) {
       if (!document.getElementById('cc-matrix-warp-loader')) {
         renderMatrixWarpLoader();
