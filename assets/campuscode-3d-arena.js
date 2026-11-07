@@ -1121,6 +1121,10 @@
 
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
+        const reactBtn = document.querySelector('.student-menu-button, .org-menu, .admin-menu-button');
+        if (reactBtn) {
+          try { reactBtn.click(); } catch (err) {}
+        }
         const sidebar = getActiveSidebar();
         const willBeCollapsed = !document.body.classList.contains('sidebar-collapsed');
         document.body.classList.toggle('sidebar-collapsed', willBeCollapsed);
@@ -1284,11 +1288,18 @@
 
   // Official CampusCode logo injector across all portal headers, marks, and sidebars
   function replaceLogoMarksWithOfficialPNG() {
-    const marks = document.querySelectorAll('.login-brand-mark, .register-brand-mark, .cc-mark, .footer-mark, .init-logo, .public-card-brand-mark, .public-verify-brand-mark');
+    const isDark = document.body.classList.contains('student-portal-active') ||
+                   document.body.classList.contains('organizer-portal-active') ||
+                   document.body.classList.contains('admin-portal-active') ||
+                   document.body.classList.contains('auth-theme-45-active') ||
+                   window.location.pathname.startsWith('/student') ||
+                   window.location.pathname.startsWith('/organizer') ||
+                   window.location.pathname.startsWith('/admin') ||
+                   window.location.pathname.startsWith('/initializing');
+    const logoSrc = isDark ? '/assets/campuscode-logo-dark-mode.png' : '/assets/campuscode-logo.png';
+    const marks = document.querySelectorAll('.login-brand-mark, .register-brand-mark, .cc-mark, .footer-mark, .init-logo, .public-card-brand-mark, .public-verify-brand-mark, .landing-logo-mark');
     marks.forEach(m => {
-      if (m.dataset.officialLogoReplaced) return;
-      m.dataset.officialLogoReplaced = 'true';
-      m.innerHTML = '<img src="/assets/campuscode-logo.png" alt="CampusCode" class="official-cc-logo-img" style="width:100%;height:100%;object-fit:contain;display:block;" />';
+      m.innerHTML = `<img src="${logoSrc}" alt="CampusCode" class="official-cc-logo-img" style="width:100%;height:100%;object-fit:contain;display:block;" />`;
     });
   }
 

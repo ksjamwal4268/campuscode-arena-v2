@@ -431,6 +431,7 @@ body.landing-flight-active .cc-back-to-top:hover {
   display: block;
 }
 
+.landing-logo-mark,
 .cc-mark,
 .login-brand-mark,
 .register-brand-mark,
@@ -448,8 +449,29 @@ body.landing-flight-active .cc-back-to-top:hover {
   background-position: center !important;
   background-repeat: no-repeat !important;
   position: relative !important;
+  border: none !important;
+  transform: none !important;
 }
 
+/* Use dark-mode contrast logo on dark portals/headers so all 3 bars are 100% visible */
+body.student-portal-active .landing-logo-mark,
+body.student-portal-active .cc-mark,
+body.organizer-portal-active .landing-logo-mark,
+body.organizer-portal-active .cc-mark,
+body.admin-portal-active .landing-logo-mark,
+body.admin-portal-active .cc-mark,
+body.auth-theme-45-active .login-brand-mark,
+body.auth-theme-45-active .register-brand-mark,
+.student-mobile-topbar .landing-logo-mark,
+.student-topbar .landing-logo-mark,
+.org-topbar .landing-logo-mark,
+.admin-topbar .landing-logo-mark,
+.init-logo {
+  background-image: url('/assets/campuscode-logo-dark-mode.png') !important;
+}
+
+.landing-logo-mark > span,
+.landing-logo-mark > i,
 .cc-mark > span,
 .cc-mark > i,
 .login-brand-mark > span,
@@ -2673,6 +2695,22 @@ html body.student-portal-active .rulebot-input input {
 
 /* Responsive adjustments for mobile viewports across all portals */
 @media (max-width: 780px) {
+  /* Hide redundant built-in React menu buttons so ONLY ONE clean 3-bars button exists */
+  .student-menu-button,
+  .org-menu,
+  .admin-menu-button,
+  .org-menu-btn,
+  button.student-menu-button {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    pointer-events: none !important;
+  }
+
   .cc-3lines-trigger {
     left: 14px !important;
     top: 11px !important;
