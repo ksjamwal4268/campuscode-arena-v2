@@ -6601,3 +6601,139 @@ body .init-screen {
   --mw-pill-bg: rgba(0, 240, 255, 0.12);
   --mw-pill-border: rgba(0, 240, 255, 0.35);
 }
+
+
+/* ==========================================================================
+   ORGANIZER: RESULT APPROVAL & RESULT REQUEST OBSIDIAN ENHANCEMENTS
+   Eliminates white box and white text -> Sleek Obsidian Glass & Amber Cyber theme
+   ========================================================================== */
+
+html body.organizer-portal-active .approval-card,
+html body:has(.organizer-page) .approval-card,
+.organizer-page .approval-card {
+  background: rgba(14, 18, 27, 0.75) !important;
+  border: 1px solid rgba(255, 184, 0, 0.25) !important;
+  border-radius: 18px !important;
+  padding: 24px !important;
+  gap: 16px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+}
+
+html body.organizer-portal-active .approval-card > div,
+html body:has(.organizer-page) .approval-card > div,
+.organizer-page .approval-card > div {
+  background: rgba(18, 22, 34, 0.95) !important;
+  border: 1px solid rgba(255, 184, 0, 0.28) !important;
+  border-radius: 14px !important;
+  padding: 16px 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  min-height: 84px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html body.organizer-portal-active .approval-card > div:hover,
+html body:has(.organizer-page) .approval-card > div:hover,
+.organizer-page .approval-card > div:hover {
+  background: rgba(25, 31, 48, 0.98) !important;
+  border-color: rgba(255, 184, 0, 0.6) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 184, 0, 0.15) !important;
+}
+
+html body.organizer-portal-active .approval-card span,
+html body:has(.organizer-page) .approval-card span,
+.organizer-page .approval-card span {
+  color: #ffb800 !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  margin-bottom: 8px !important;
+  opacity: 0.95 !important;
+  display: block !important;
+}
+
+html body.organizer-portal-active .approval-card b,
+html body:has(.organizer-page) .approval-card b,
+.organizer-page .approval-card b {
+  color: #ffffff !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.35 !important;
+  display: block !important;
+  word-break: break-word !important;
+}
+
+html body.organizer-portal-active .approval-card button.primary-btn,
+html body:has(.organizer-page) .approval-card button.primary-btn,
+.organizer-page .approval-card button.primary-btn {
+  grid-column: 1 / -1 !important;
+  justify-self: start !important;
+  margin-top: 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  background: linear-gradient(135deg, #ffb800 0%, #ff9100 100%) !important;
+  color: #0d1117 !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  padding: 13px 26px !important;
+  border-radius: 12px !important;
+  border: none !important;
+  box-shadow: 0 10px 24px rgba(255, 184, 0, 0.35) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+html body.organizer-portal-active .approval-card button.primary-btn:hover:not(:disabled),
+html body:has(.organizer-page) .approval-card button.primary-btn:hover:not(:disabled),
+.organizer-page .approval-card button.primary-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ffc72e 0%, #ffa51f 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 14px 30px rgba(255, 184, 0, 0.45) !important;
+}
+
+html body.organizer-portal-active .approval-card button.primary-btn:disabled,
+html body:has(.organizer-page) .approval-card button.primary-btn:disabled,
+.organizer-page .approval-card button.primary-btn:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+html body.organizer-portal-active .form-success,
+.organizer-page .form-success {
+  background: rgba(168, 230, 46, 0.12) !important;
+  border: 1px solid rgba(168, 230, 46, 0.35) !important;
+  color: #a8e62e !important;
+  border-radius: 10px !important;
+  padding: 12px 18px !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 13px !important;
+  margin-bottom: 16px !important;
+}
+
+html body.organizer-portal-active .form-error,
+.organizer-page .form-error {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+  color: #fca5a5 !important;
+  border-radius: 10px !important;
+  padding: 12px 18px !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 13px !important;
+  margin-bottom: 16px !important;
+}
