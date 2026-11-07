@@ -296,7 +296,8 @@
           localStorage.setItem('campuscode_token', token);
           localStorage.setItem('role', 'ORGANIZER');
           localStorage.setItem('user', JSON.stringify(orgUser));
-          window.location.href = '/organizer';
+          sessionStorage.setItem('cc_visited_organizer', 'yes');
+          window.location.href = '/initializing';
           return;
         }
 
@@ -314,7 +315,8 @@
           localStorage.setItem('campuscode_token', token);
           localStorage.setItem('role', 'ADMIN');
           localStorage.setItem('user', JSON.stringify(adminUser));
-          window.location.href = '/admin';
+          sessionStorage.setItem('cc_visited_admin', 'yes');
+          window.location.href = '/initializing';
           return;
         }
 
@@ -351,6 +353,7 @@
         localStorage.removeItem('campuscode_token');
         localStorage.removeItem('role');
         localStorage.removeItem('user');
+        sessionStorage.clear();
         window.location.href = '/login';
       };
 
@@ -380,6 +383,9 @@
 
       setInterval(injectLoginHelper, 800);
     </script>
+    <!-- Aceternity Matrix Trail Canvas Container (True Background Layer) -->
+    <canvas id="matrix-trail-canvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; display: none;"></canvas>
+    <script src="/assets/matrix-trail.js"></script>
     <script src="/assets/three.min.js"></script>
     <script src="/assets/campuscode-3d-arena.js"></script>
   </body>

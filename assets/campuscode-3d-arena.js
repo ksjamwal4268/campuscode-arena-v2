@@ -25,10 +25,47 @@
   let targetProgress = 0, currentProgress = 0;
   let isRunning = false;
 
-  // route check - only mount 3d scene on landing page
+  // route check - manages landing 3D corridor & portal theme flags
   function checkRoute() {
     const path = window.location.pathname;
+
+    // Check if on initializing route -> render custom Matrix Warp loading screen
+    if (path.startsWith('/initializing')) {
+      renderMatrixWarpLoader();
+      return;
+    } else {
+      const existingLoader = document.getElementById('cc-matrix-warp-loader');
+      if (existingLoader) {
+        existingLoader.remove();
+        matrixLoaderRunning = false;
+        if (matrixLoaderRaf) cancelAnimationFrame(matrixLoaderRaf);
+      }
+    }
+
     const isLanding = (path === '/' || path === '' || path.endsWith('index.html') || window.location.protocol === 'file:');
+
+    // Portal Theme Active Classes
+    // Student Portal -> Theme 27: "Gorgeous Contrast" (Immersive Garden - Lime & Obsidian)
+    // Admin Portal -> Theme 12: "Striking and Simple" (Bert - Electric Blue & Smoky Black)
+    // Organizer Portal -> Theme 28: "Effective Accent Colors" (SMFB - Solar Amber & Charcoal)
+    // Auth Pages (Login & Register) -> Theme 45: "Accent Colors That Pop" (Stinkdigital - Electric Purple on Dark Violet-Black)
+    // Public Pages (/u/:id & /verify/:code) -> Cyber Dark Obsidian Identity & Credential Theme
+    const hasStudent = path.startsWith('/student') || !!document.querySelector('.student-panel');
+    const hasOrg = path.startsWith('/organizer') || !!document.querySelector('.organizer-page');
+    const hasAdmin = path.startsWith('/admin') || !!document.querySelector('.admin-app');
+    const hasAuth = path.startsWith('/login') || path.startsWith('/register') || !!document.querySelector('.campus-login, .campus-register');
+    const hasPublicCard = path.startsWith('/u/') || path.startsWith('/verify/') || !!document.querySelector('.public-card-page, .public-verify-page');
+
+    document.body.classList.toggle('student-portal-active', hasStudent);
+    document.body.classList.toggle('organizer-portal-active', hasOrg);
+    document.body.classList.toggle('admin-portal-active', hasAdmin);
+    document.body.classList.toggle('auth-theme-45-active', hasAuth);
+    document.body.classList.toggle('public-page-active', hasPublicCard);
+    document.documentElement.classList.toggle('student-portal-active', hasStudent);
+    document.documentElement.classList.toggle('organizer-portal-active', hasOrg);
+    document.documentElement.classList.toggle('admin-portal-active', hasAdmin);
+    document.documentElement.classList.toggle('auth-theme-45-active', hasAuth);
+    document.documentElement.classList.toggle('public-page-active', hasPublicCard);
 
     if (isLanding) {
       document.body.classList.add('landing-flight-active');
@@ -352,80 +389,100 @@
     const w = viewport.clientWidth || window.innerWidth;
     const h = viewport.clientHeight || window.innerHeight;
 
-    // scene background & fog
+    // scene background & fog (Theme 17: "Innovative and Audacious" - Obsidian Space)
     threeScene = new THREE.Scene();
-    threeScene.background = new THREE.Color(0xf7f7f4);
-    threeScene.fog = new THREE.FogExp2(0xf7f7f4, 0.00075);
+    threeScene.background = new THREE.Color(0x070707);
+    threeScene.fog = new THREE.FogExp2(0x070707, 0.00065);
 
     // camera
-    threeCamera = new THREE.PerspectiveCamera(58, w / h, 0.1, 4500);
+    threeCamera = new THREE.PerspectiveCamera(58, w / h, 0.1, 4200);
     threeCamera.position.set(0, 15, 450);
 
-    // renderer
-    threeRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    // renderer - optimized for maximum 60 FPS performance on all GPUs
+    const dpr = window.devicePixelRatio || 1;
+    threeRenderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      antialias: dpr <= 1.5,
+      alpha: false,
+      powerPreference: 'high-performance',
+      precision: 'mediump',
+      stencil: false,
+      depth: true
+    });
     threeRenderer.setSize(w, h);
-    threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    // Capping pixel ratio at 1.25 gives massive 2x-3x fillrate boost on laptop screens
+    threeRenderer.setPixelRatio(Math.min(dpr, 1.25));
 
-    // floor grid
-    runwayGrid = new THREE.GridHelper(5000, 160, 0x7665ff, 0xdeded8);
-    runwayGrid.position.set(0, -42, -1600);
+    // floor grid (Cyber laser tracks) - optimized division count
+    runwayGrid = new THREE.GridHelper(3600, 72, 0x7665ff, 0x161a29);
+    runwayGrid.position.set(0, -42, -1400);
     threeScene.add(runwayGrid);
 
-    // ceiling grid
-    ceilGrid = new THREE.GridHelper(5000, 160, 0xa8e62e, 0xededeb);
-    ceilGrid.position.set(0, 115, -1600);
+    // ceiling grid (Cyber lime canopy) - optimized division count
+    ceilGrid = new THREE.GridHelper(3600, 72, 0xa8e62e, 0x121b10);
+    ceilGrid.position.set(0, 115, -1400);
     threeScene.add(ceilGrid);
 
-    // torus rings along z-axis
+    // torus rings along z-axis (Glowing quantum portals) - shared lightweight geometry
     floatingRings = [];
-    const ringColors = [0x7665ff, 0xa8e62e, 0x7665ff, 0x82b91a, 0x7665ff, 0xa8e62e, 0x7665ff, 0xa8e62e, 0x7665ff];
+    const ringColors = [0x7665ff, 0xa8e62e, 0x7665ff, 0x00f0ff, 0x7665ff, 0xa8e62e, 0x7665ff, 0xa8e62e, 0x7665ff];
+    const sharedRingGeo = new THREE.TorusGeometry(48, 1.2, 8, 32);
     for (let i = 0; i < 9; i++) {
       const stageConfig = STAGE_CONFIG[i];
       const portalZ = 450 - (stageConfig.center * 3750);
 
-      const ringGeo = new THREE.TorusGeometry(48, 1.2, 16, 64);
       const ringMat = new THREE.MeshBasicMaterial({
         color: ringColors[i % ringColors.length],
         transparent: true,
-        opacity: 0.42
+        opacity: 0.72
       });
-      const ring = new THREE.Mesh(ringGeo, ringMat);
+      const ring = new THREE.Mesh(sharedRingGeo, ringMat);
       ring.position.set(0, 16, portalZ);
       threeScene.add(ring);
       floatingRings.push(ring);
     }
 
-    // floating wireframe shapes
+    // floating wireframe shapes - shared geometries & materials for zero alloc overhead
     floatingMonoliths = [];
-    for (let i = 0; i < 28; i++) {
+    const sharedIcosaGeo = new THREE.IcosahedronGeometry(14, 0);
+    const sharedBoxGeo = new THREE.BoxGeometry(16, 16, 16);
+    const sharedPurpleMat = new THREE.MeshBasicMaterial({
+      color: 0x7665ff,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.52
+    });
+    const sharedLimeMat = new THREE.MeshBasicMaterial({
+      color: 0xa8e62e,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.52
+    });
+
+    for (let i = 0; i < 12; i++) {
       const isIcosa = (i % 2 === 0);
-      const geo = isIcosa ? new THREE.IcosahedronGeometry(14, 0) : new THREE.BoxGeometry(16, 16, 16);
-      const mat = new THREE.MeshBasicMaterial({
-        color: i % 2 === 0 ? 0x7665ff : 0xa8e62e,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.38
-      });
+      const geo = isIcosa ? sharedIcosaGeo : sharedBoxGeo;
+      const mat = isIcosa ? sharedPurpleMat : sharedLimeMat;
       const mesh = new THREE.Mesh(geo, mat);
 
       const side = (i % 2 === 0 ? 1 : -1);
-      const x = side * (105 + Math.random() * 90);
-      const y = -15 + Math.random() * 75;
-      const z = 350 - (i * 135);
+      const x = side * (100 + Math.random() * 80);
+      const y = -15 + Math.random() * 70;
+      const z = 320 - (i * 280);
 
       mesh.position.set(x, y, z);
       threeScene.add(mesh);
       floatingMonoliths.push({
         mesh: mesh,
         baseY: y,
-        rotX: 0.006 + Math.random() * 0.012,
-        rotY: 0.008 + Math.random() * 0.014,
+        rotX: 0.006 + Math.random() * 0.008,
+        rotY: 0.008 + Math.random() * 0.010,
         phase: Math.random() * Math.PI * 2
       });
     }
 
-    // particles
-    const pCount = 2600;
+    // particles - 1000 high-performance stars
+    const pCount = 1000;
     const pPos = new Float32Array(pCount * 3);
     const pCol = new Float32Array(pCount * 3);
     const cPurple = new THREE.Color(0x7665ff);
@@ -447,7 +504,7 @@
     pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
 
     const pMat = new THREE.PointsMaterial({
-      size: 2.8,
+      size: 2.6,
       vertexColors: true,
       transparent: true,
       opacity: 0.65
@@ -455,10 +512,16 @@
     particleSystem = new THREE.Points(pGeo, pMat);
     threeScene.add(particleSystem);
 
-    // mouse move handler
+    // throttled mouse move handler
+    let mouseMoveTicking = false;
     window.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      if (mouseMoveTicking) return;
+      mouseMoveTicking = true;
+      requestAnimationFrame(() => {
+        mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+        mouseMoveTicking = false;
+      });
     }, { passive: true });
 
     // resize handler
@@ -480,6 +543,10 @@
     function animate() {
       if (!isRunning) return;
       requestAnimationFrame(animate);
+
+      // pause rendering when user is on another tab to save 100% CPU/battery
+      if (document.hidden) return;
+
       clock += 0.015;
 
       // smooth progress and camera position
@@ -494,16 +561,19 @@
       }
 
       // rotate rings
-      floatingRings.forEach((r, idx) => {
-        r.rotation.z += 0.005 * (idx % 2 === 0 ? 1 : -1);
-      });
+      const ringCount = floatingRings.length;
+      for (let i = 0; i < ringCount; i++) {
+        floatingRings[i].rotation.z += 0.005 * (i % 2 === 0 ? 1 : -1);
+      }
 
       // float monoliths
-      floatingMonoliths.forEach(item => {
+      const monolithCount = floatingMonoliths.length;
+      for (let i = 0; i < monolithCount; i++) {
+        const item = floatingMonoliths[i];
         item.mesh.rotation.x += item.rotX;
         item.mesh.rotation.y += item.rotY;
         item.mesh.position.y = item.baseY + Math.sin(clock * 1.5 + item.phase) * 5;
-      });
+      }
 
       // spin particle field
       const flightSpeed = Math.abs(targetProgress - currentProgress);
@@ -520,7 +590,7 @@
     animate();
   }
 
-  // card tilt and cursor glare
+  // card tilt and cursor glare - optimized with rAF throttling & cached bounds
   function attachCardParallaxTilt() {
     // general card tilt
     const generalCards = document.querySelectorAll('.cc-how-monolith, .cc-hack-card');
@@ -528,19 +598,35 @@
       if (card.dataset.tiltActive) return;
       card.dataset.tiltActive = 'true';
 
-      card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        const rotX = (y / -14).toFixed(1);
-        const rotY = (x / 16).toFixed(1);
-        card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-4px) scale(1.02)`;
-        card.style.transition = 'transform 0.08s ease-out, box-shadow 0.2s ease';
+      let cardRect = null;
+      let tiltRaf = null;
+
+      card.addEventListener('mouseenter', () => {
+        cardRect = card.getBoundingClientRect();
       });
 
+      card.addEventListener('mousemove', (e) => {
+        if (!cardRect) cardRect = card.getBoundingClientRect();
+        if (tiltRaf) return;
+        const clientX = e.clientX;
+        const clientY = e.clientY;
+        tiltRaf = requestAnimationFrame(() => {
+          tiltRaf = null;
+          const x = clientX - cardRect.left - cardRect.width / 2;
+          const y = clientY - cardRect.top - cardRect.height / 2;
+          const rotX = (y / -16).toFixed(1);
+          const rotY = (x / 18).toFixed(1);
+          card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-3px) scale(1.015)`;
+        });
+      }, { passive: true });
+
       card.addEventListener('mouseleave', () => {
+        cardRect = null;
+        if (tiltRaf) {
+          cancelAnimationFrame(tiltRaf);
+          tiltRaf = null;
+        }
         card.style.transform = '';
-        card.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease';
       });
     });
 
@@ -551,29 +637,44 @@
       card.dataset.cometActive = 'true';
 
       const glare = card.querySelector('.cc-comet-glare');
+      let cardRect = null;
+      let cometRaf = null;
 
-      card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const xCenter = x - rect.width / 2;
-        const yCenter = y - rect.height / 2;
-
-        const rotX = (yCenter / -9).toFixed(2);
-        const rotY = (xCenter / 11).toFixed(2);
-
-        card.style.transform = `perspective(850px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(14px) scale(1.025)`;
-        card.style.transition = 'transform 0.08s ease-out';
-
-        if (glare) {
-          glare.style.opacity = '1';
-          glare.style.background = `radial-gradient(circle 190px at ${x}px ${y}px, rgba(118, 101, 255, 0.32), rgba(168, 230, 46, 0.16) 45%, transparent 75%)`;
-        }
+      card.addEventListener('mouseenter', () => {
+        cardRect = card.getBoundingClientRect();
       });
 
+      card.addEventListener('mousemove', (e) => {
+        if (!cardRect) cardRect = card.getBoundingClientRect();
+        if (cometRaf) return;
+        const clientX = e.clientX;
+        const clientY = e.clientY;
+        cometRaf = requestAnimationFrame(() => {
+          cometRaf = null;
+          const x = clientX - cardRect.left;
+          const y = clientY - cardRect.top;
+          const xCenter = x - cardRect.width / 2;
+          const yCenter = y - cardRect.height / 2;
+
+          const rotX = (yCenter / -11).toFixed(2);
+          const rotY = (xCenter / 13).toFixed(2);
+
+          card.style.transform = `perspective(850px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(10px) scale(1.02)`;
+
+          if (glare) {
+            glare.style.opacity = '1';
+            glare.style.background = `radial-gradient(circle 180px at ${x}px ${y}px, rgba(118, 101, 255, 0.28), rgba(168, 230, 46, 0.14) 45%, transparent 75%)`;
+          }
+        });
+      }, { passive: true });
+
       card.addEventListener('mouseleave', () => {
+        cardRect = null;
+        if (cometRaf) {
+          cancelAnimationFrame(cometRaf);
+          cometRaf = null;
+        }
         card.style.transform = 'perspective(850px) rotateX(0deg) rotateY(0deg) translateZ(0px) scale(1)';
-        card.style.transition = 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease';
         if (glare) {
           glare.style.opacity = '0';
         }
@@ -581,46 +682,352 @@
     });
   }
 
-  // sidebar auto-reveal when hovering near left edge or 3-bar trigger
-  function setupHoverSlidebars() {
-    let hideTimeout = null;
+  // =========================================================================
+  // MATRIX WARP LOADING SCREEN (STUDENT · ORGANIZER · ADMIN)
+  // =========================================================================
+  let matrixLoaderRunning = false;
+  let matrixLoaderRaf = null;
 
-    document.addEventListener('mousemove', (e) => {
-      const activeSidebar = document.querySelector('.student-sidebar');
-      if (!activeSidebar) return;
+  function renderMatrixWarpLoader() {
+    const path = window.location.pathname;
+    if (!path.startsWith('/initializing')) {
+      const existing = document.getElementById('cc-matrix-warp-loader');
+      if (existing) {
+        existing.remove();
+        matrixLoaderRunning = false;
+        if (matrixLoaderRaf) cancelAnimationFrame(matrixLoaderRaf);
+      }
+      return;
+    }
 
-      const triggerBtn = document.getElementById('cc-3lines-trigger');
-      const isOverTrigger = triggerBtn && triggerBtn.matches(':hover');
-      const isOverSidebar = activeSidebar.matches(':hover') || (e.clientX <= 265 && activeSidebar.classList.contains('hover-expanded'));
+    if (document.getElementById('cc-matrix-warp-loader')) {
+      return;
+    }
 
-      // expand sidebar if cursor is near left edge (within 52px) or hovering trigger
-      if (e.clientX <= 52 || isOverTrigger) {
-        if (hideTimeout) {
-          clearTimeout(hideTimeout);
-          hideTimeout = null;
+    const role = (localStorage.getItem('role') || 'STUDENT').toUpperCase();
+    let user = {};
+    try { user = JSON.parse(localStorage.getItem('user') || '{}'); } catch(e) {}
+
+    let config = {
+      role: 'STUDENT',
+      themeClass: 'theme-student',
+      color: '#a8e62e',
+      secondary: '#7665ff',
+      name: user.name || 'Karthik Raja',
+      sub: user.college ? (user.college + ' · ' + (user.department || 'CSE')) : 'Anna University, CEG Campus · Computer Science (3rd Year)',
+      tag: user.campusId || user.campus_code_id || 'CC-CHENNAI-802',
+      badge: 'STUDENT BUILDER ACCESS',
+      avatar: user.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=Karthik',
+      dest: '/student',
+      steps: [
+        '[01/04] NEURAL_HANDSHAKE: CONNECTING ANNA UNIVERSITY CEG NODE...',
+        '[02/04] PASSPORT_SYNC: DECRYPTING BUILDER KEYS & REPOSITORIES...',
+        '[03/04] RADAR_ONLINE: SYNCING HACKMATE SQUAD ENGINE...',
+        '[04/04] SYSTEM_ONLINE: ENTERING STUDENT ARENA'
+      ]
+    };
+
+    if (role === 'ORGANIZER') {
+      config = {
+        role: 'ORGANIZER',
+        themeClass: 'theme-organizer',
+        color: '#ffb800',
+        secondary: '#ff9100',
+        name: user.name || 'Priya Narayanan',
+        sub: user.organization ? (user.organization + ' · Director') : 'Chennai Tech Council · Executive Hackathon Lead',
+        tag: user.id || 'ORG-CHENNAI-01',
+        badge: 'HACKATHON DIRECTOR & ORGANIZER',
+        avatar: user.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=Priya',
+        dest: '/organizer',
+        steps: [
+          '[01/04] AUTH_COUNCIL: AUTHORIZING CHENNAI TECH COUNCIL DISPATCH...',
+          '[02/04] ARENA_MATRIX: HYDRATING 1,240 TEAMS & AST ENGINES...',
+          '[03/04] RULEBOT_ACTIVE: MOUNTING 24/7 AI JURY & COMPLIANCE COPILOTS...',
+          '[04/04] MISSION_CONTROL: ORGANIZER COMMAND DECK UNLOCKED'
+        ]
+      };
+    } else if (role === 'ADMIN') {
+      config = {
+        role: 'ADMIN',
+        themeClass: 'theme-admin',
+        color: '#00f0ff',
+        secondary: '#526eff',
+        name: user.name || 'CampusCode Administrator',
+        sub: 'Platform Overseer · Master Infrastructure Authority',
+        tag: user.id || 'SYS-ADMIN-MASTER',
+        badge: 'CAMPUSCODE PLATFORM OVERSEER',
+        avatar: user.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=Admin',
+        dest: '/admin',
+        steps: [
+          '[01/04] ROOT_KERNEL: INITIALIZING LEVEL 0 SECURITY ENCLAVE...',
+          '[02/04] GLOBAL_FLEET: AUDITING NATIONAL CHAPTER NODES & AUDIT LOGS...',
+          '[03/04] LEDGER_VERIFY: CRYPTOGRAPHIC PASSPORT LEDGER SYNCED...',
+          '[04/04] OVERSEER_ONLINE: ADMIN DASHBOARD UNLOCKED'
+        ]
+      };
+    }
+
+    // Build DOM
+    const loader = document.createElement('div');
+    loader.id = 'cc-matrix-warp-loader';
+    loader.className = config.themeClass;
+    loader.innerHTML = `
+      <canvas id="cc-matrix-canvas"></canvas>
+      <div class="mw-grid-overlay"></div>
+
+      <!-- Topbar -->
+      <header class="mw-topbar">
+        <div class="mw-brand">
+          <div class="mw-brand-mark">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="mw-brand-text">
+            <span>CAMPUSCODE</span>
+            <small>ARENA OS // QUANTUM RUNTIME</small>
+          </div>
+        </div>
+
+        <div class="mw-secure-tag">
+          <span class="mw-secure-dot"></span>
+          <span>SECURE PROTOCOL v2.6 // AES-256</span>
+        </div>
+      </header>
+
+      <!-- Center Stage -->
+      <main class="mw-stage">
+        <!-- Dual Counter-Rotating Reactor Core -->
+        <div class="mw-reactor-wrap">
+          <svg class="mw-reactor-svg" viewBox="0 0 240 240">
+            <circle class="mw-ring-outer" cx="120" cy="120" r="105" fill="none" />
+            <circle class="mw-ring-inner" cx="120" cy="120" r="82" fill="none" />
+          </svg>
+          <div class="mw-core-disc">
+            <div class="mw-pct-number" id="mwPct">0%</div>
+            <div class="mw-core-tag">WARP SYNC</div>
+          </div>
+        </div>
+
+        <!-- User Identity Card -->
+        <div class="mw-identity-card">
+          <div class="mw-id-row">
+            <div class="mw-id-avatar-box">
+              <img src="${config.avatar}" alt="${config.name}" />
+            </div>
+            <div class="mw-id-details">
+              <span class="mw-id-role-pill">
+                <span>✦</span> ${config.badge}
+              </span>
+              <div class="mw-id-name">${config.name}</div>
+              <div class="mw-id-sub">${config.sub}</div>
+            </div>
+          </div>
+
+          <div class="mw-progress-container">
+            <div class="mw-progress-track">
+              <div class="mw-progress-fill" id="mwProgressFill"></div>
+            </div>
+            <div class="mw-telemetry-line" id="mwTelemetry">
+              ${config.steps[0]}
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Bottom Bar -->
+      <footer class="mw-footer">
+        <div>
+          SECTOR: <strong>${config.tag}</strong>
+        </div>
+        <div>
+          STATUS: <strong style="color: ${config.color};">AUTHORIZING ACCESS...</strong>
+        </div>
+        <div>
+          RUNTIME: <strong>60 FPS · 0.00% PACKET LOSS</strong>
+        </div>
+      </footer>
+    `;
+
+    document.body.appendChild(loader);
+
+    // Canvas Matrix Warp Animation
+    const canvas = document.getElementById('cc-matrix-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const onResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', onResize);
+
+    const particles = [];
+    const PARTICLE_COUNT = 320;
+    const chars = ['0', '1', 'CC', '26', 'Ω', 'λ', '⚡', 'A', 'F', '9'];
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: (Math.random() - 0.5) * canvas.width * 2.2,
+        y: (Math.random() - 0.5) * canvas.height * 2.2,
+        z: Math.random() * 1000,
+        char: chars[Math.floor(Math.random() * chars.length)]
+      });
+    }
+
+    const startTime = performance.now();
+    const DURATION = 2400; // 2.4 seconds total sequence
+    matrixLoaderRunning = true;
+
+    function animateLoader(now) {
+      if (!matrixLoaderRunning) return;
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / DURATION);
+
+      // Update UI elements
+      const pct = Math.round(progress * 100);
+      const pctEl = document.getElementById('mwPct');
+      const barEl = document.getElementById('mwProgressFill');
+      const telemEl = document.getElementById('mwTelemetry');
+
+      if (pctEl) pctEl.textContent = `${pct}%`;
+      if (barEl) barEl.style.width = `${pct}%`;
+
+      // Update telemetry step
+      if (telemEl) {
+        if (progress < 0.25) telemEl.textContent = config.steps[0];
+        else if (progress < 0.50) telemEl.textContent = config.steps[1];
+        else if (progress < 0.75) telemEl.textContent = config.steps[2];
+        else telemEl.textContent = config.steps[3];
+      }
+
+      // Draw Matrix Warp
+      ctx.fillStyle = 'rgba(6, 8, 13, 0.25)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      // Exponential warp speed acceleration
+      const warpSpeed = 5 + Math.pow(progress, 2.4) * 65;
+
+      ctx.font = '11px "DM Mono", monospace';
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.z -= warpSpeed;
+        if (p.z <= 0) {
+          p.z = 1000;
+          p.x = (Math.random() - 0.5) * canvas.width * 2.2;
+          p.y = (Math.random() - 0.5) * canvas.height * 2.2;
         }
-        activeSidebar.classList.add('hover-expanded');
-        document.body.classList.add('sidebar-is-expanded');
-      } else if (e.clientX > 275 && !isOverTrigger) {
-        // collapse when cursor leaves sidebar area into main content
-        if (activeSidebar.classList.contains('hover-expanded') && !hideTimeout) {
-          hideTimeout = setTimeout(() => {
-            activeSidebar.classList.remove('hover-expanded');
-            document.body.classList.remove('sidebar-is-expanded');
-            hideTimeout = null;
-          }, 140);
+
+        const k = 260 / p.z;
+        const px = cx + p.x * k;
+        const py = cy + p.y * k;
+
+        if (px >= 0 && px <= canvas.width && py >= 0 && py <= canvas.height) {
+          const depthAlpha = Math.min(1, (1 - p.z / 1000) * 1.5);
+
+          if (progress > 0.45) {
+            // Warp streaks
+            ctx.strokeStyle = config.color;
+            ctx.globalAlpha = depthAlpha * 0.85;
+            ctx.lineWidth = Math.max(1, (1 - p.z / 1000) * 4);
+            ctx.beginPath();
+            ctx.moveTo(px, py);
+            const tailK = k * (1 - (warpSpeed * 0.005));
+            ctx.lineTo(cx + p.x * tailK, cy + p.y * tailK);
+            ctx.stroke();
+            ctx.globalAlpha = 1.0;
+          } else {
+            // Digital rain characters
+            ctx.fillStyle = i % 3 === 0 ? config.secondary : config.color;
+            ctx.globalAlpha = depthAlpha;
+            ctx.fillText(p.char, px, py);
+            ctx.globalAlpha = 1.0;
+          }
         }
       }
-    }, { passive: true });
+
+      if (progress < 1) {
+        matrixLoaderRaf = requestAnimationFrame(animateLoader);
+      } else {
+        // Complete! Shockwave & navigate
+        loader.classList.add('fade-out');
+        setTimeout(() => {
+          matrixLoaderRunning = false;
+          window.removeEventListener('resize', onResize);
+          window.location.replace(config.dest);
+        }, 320);
+      }
+    }
+
+    matrixLoaderRaf = requestAnimationFrame(animateLoader);
   }
 
-  // navigation drawer trigger
-  function setupStudentSidebar3Bars() {
-    const isStudent = window.location.pathname.startsWith('/student');
+  function getActiveSidebar() {
+    return document.querySelector('.student-sidebar, .org-sidebar, .admin-sidebar');
+  }
+
+  function isPortalPage() {
+    const p = window.location.pathname;
+    return p.startsWith('/student') || p.startsWith('/organizer') || p.startsWith('/admin');
+  }
+
+  // check if organizer or admin portal needs the initializing loading sequence
+  function checkPortalInitializing() {
+    const pathname = window.location.pathname;
+    const token = localStorage.getItem('token') || localStorage.getItem('campuscode_token');
+    
+    // Check if on organizer and hasn't shown initializing sequence
+    if (pathname.startsWith('/organizer')) {
+      const seen = sessionStorage.getItem('cc_visited_organizer');
+      if (!seen) {
+        sessionStorage.setItem('cc_visited_organizer', 'yes');
+        if (!token || localStorage.getItem('role') !== 'ORGANIZER') {
+          if (typeof window.demoLogin === 'function') {
+            window.demoLogin('ORGANIZER');
+            return true;
+          }
+        }
+        window.location.replace('/initializing');
+        return true;
+      }
+    }
+
+    // Check if on admin and hasn't shown initializing sequence
+    if (pathname.startsWith('/admin')) {
+      const seen = sessionStorage.getItem('cc_visited_admin');
+      if (!seen) {
+        sessionStorage.setItem('cc_visited_admin', 'yes');
+        if (!token || localStorage.getItem('role') !== 'ADMIN') {
+          if (typeof window.demoLogin === 'function') {
+            window.demoLogin('ADMIN');
+            return true;
+          }
+        }
+        window.location.replace('/initializing');
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // side panel is permanently visible by default on desktop, collapsible on click
+  function setupHoverSlidebars() {
+    // Keep sidebar visible by default across all portals
+    document.body.classList.remove('sidebar-collapsed');
+  }
+
+  // navigation drawer / collapse toggle for student, organizer, and admin
+  function setupPortalSidebar3Bars() {
+    const isPortal = isPortalPage();
     const existingBtn = document.getElementById('cc-3lines-trigger');
 
-    if (!isStudent) {
+    if (!isPortal) {
       if (existingBtn) existingBtn.remove();
+      document.body.classList.remove('sidebar-collapsed');
       return;
     }
 
@@ -629,28 +1036,25 @@
       btn.id = 'cc-3lines-trigger';
       btn.className = 'cc-3lines-trigger';
       btn.type = 'button';
-      btn.setAttribute('aria-label', 'Toggle Navigation Menu');
-      btn.setAttribute('title', 'Menu');
+      btn.setAttribute('aria-label', 'Toggle Side Panel');
+      btn.setAttribute('title', 'Toggle Side Panel');
       btn.innerHTML = `
         <span class="cc-bar cc-bar-1"></span>
         <span class="cc-bar cc-bar-2"></span>
         <span class="cc-bar cc-bar-3"></span>
       `;
 
-      btn.addEventListener('mouseenter', () => {
-        const sidebar = document.querySelector('.student-sidebar');
-        if (sidebar) {
-          sidebar.classList.add('hover-expanded');
-          document.body.classList.add('sidebar-is-expanded');
-        }
-      });
-
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const sidebar = document.querySelector('.student-sidebar');
+        const isCollapsed = document.body.classList.toggle('sidebar-collapsed');
+        const sidebar = getActiveSidebar();
         if (sidebar) {
-          const isOpen = sidebar.classList.toggle('hover-expanded');
-          document.body.classList.toggle('sidebar-is-expanded', isOpen);
+          sidebar.classList.toggle('is-collapsed', isCollapsed);
+          if (window.innerWidth <= 780) {
+            sidebar.classList.toggle('open', !isCollapsed);
+            sidebar.classList.toggle('student-sidebar-open', !isCollapsed);
+            sidebar.classList.toggle('is-open', !isCollapsed);
+          }
         }
       });
 
@@ -672,18 +1076,32 @@
     });
   }
 
-  // update stages based on scroll progress
+  // update stages based on scroll progress - optimized with cached DOM elements & dirty check
+  let cachedStageElements = null;
+  let lastProgressApplied = -999;
+  let lastStageIndexApplied = -1;
+
   function updateStageTransforms(progress) {
-    const stageElements = document.querySelectorAll('#cc-flight-stages .cc-stage');
-    if (!stageElements || stageElements.length === 0) return;
+    if (!cachedStageElements || cachedStageElements.length === 0) {
+      cachedStageElements = document.querySelectorAll('#cc-flight-stages .cc-stage');
+      if (!cachedStageElements || cachedStageElements.length === 0) return;
+    }
+
+    // Skip heavy DOM updates if scroll progress is essentially unchanged
+    if (Math.abs(progress - lastProgressApplied) < 0.0002) {
+      return;
+    }
+    lastProgressApplied = progress;
 
     const spacing = 0.12;
     let activeStageIndex = 0;
     let minDistance = 999;
 
-    stageElements.forEach((el, idx) => {
+    const len = cachedStageElements.length;
+    for (let idx = 0; idx < len; idx++) {
+      const el = cachedStageElements[idx];
       const config = STAGE_CONFIG[idx];
-      if (!config) return;
+      if (!config) continue;
 
       const diff = (progress - config.center) / spacing;
       const absDiff = Math.abs(diff);
@@ -693,36 +1111,41 @@
         activeStageIndex = idx;
       }
 
-      // hide stages outside the active window
-      if (absDiff >= 0.78) {
-        el.classList.add('stage-hidden');
-        el.style.opacity = '0';
-        el.style.pointerEvents = 'none';
-        return;
+      // hide stages outside the active window to prevent visual clutter
+      if (absDiff >= 0.55) {
+        if (!el.classList.contains('stage-hidden')) {
+          el.classList.add('stage-hidden');
+          el.style.opacity = '0';
+          el.style.pointerEvents = 'none';
+        }
+        continue;
       }
 
-      el.classList.remove('stage-hidden');
+      if (el.classList.contains('stage-hidden')) {
+        el.classList.remove('stage-hidden');
+      }
 
       // translate along z and scale based on scroll distance
       const zTranslate = -diff * 650;
       const scale = 1.0 + (diff * 0.35);
 
       let opacity = 1.0;
-      if (absDiff > 0.35) {
-        opacity = Math.max(0, 1.0 - (absDiff - 0.35) / 0.43);
+      if (absDiff > 0.25) {
+        opacity = Math.max(0, 1.0 - (absDiff - 0.25) / 0.28);
       }
 
-      const blur = Math.max(0, (absDiff - 0.3) * 6);
-
+      // Hardware accelerated transform without expensive CSS filter blur
       el.style.transform = `translate3d(0, 0, ${zTranslate.toFixed(1)}px) scale(${scale.toFixed(3)})`;
       el.style.opacity = opacity.toFixed(3);
-      el.style.filter = blur > 0.4 ? `blur(${blur.toFixed(1)}px)` : 'none';
-      el.style.pointerEvents = (absDiff < 0.4) ? 'auto' : 'none';
-    });
+      el.style.pointerEvents = (absDiff < 0.38) ? 'auto' : 'none';
+    }
 
-    const stageLabel = document.getElementById('ccNavStageLabel');
-    if (stageLabel && STAGE_CONFIG[activeStageIndex]) {
-      stageLabel.textContent = STAGE_CONFIG[activeStageIndex].label;
+    if (activeStageIndex !== lastStageIndexApplied) {
+      lastStageIndexApplied = activeStageIndex;
+      const stageLabel = document.getElementById('ccNavStageLabel');
+      if (stageLabel && STAGE_CONFIG[activeStageIndex]) {
+        stageLabel.textContent = STAGE_CONFIG[activeStageIndex].label;
+      }
     }
 
     const progressBar = document.getElementById('ccFlightProgressBar');
@@ -775,9 +1198,10 @@
 
   // init
   function boot() {
+    if (checkPortalInitializing()) return;
     checkRoute();
     setupHoverSlidebars();
-    setupStudentSidebar3Bars();
+    setupPortalSidebar3Bars();
     filterStudentSidebarItems();
   }
 
@@ -788,14 +1212,27 @@
   }
 
   window.addEventListener('popstate', () => {
+    cachedStageElements = null;
+    if (checkPortalInitializing()) return;
     checkRoute();
-    setupStudentSidebar3Bars();
+    setupPortalSidebar3Bars();
     filterStudentSidebarItems();
   });
+
+  let lastCheckedPath = null;
   setInterval(() => {
-    checkRoute();
-    setupStudentSidebar3Bars();
-    filterStudentSidebarItems();
-  }, 400);
+    if (window.location.pathname.startsWith('/initializing')) {
+      if (!document.getElementById('cc-matrix-warp-loader')) {
+        renderMatrixWarpLoader();
+      }
+    }
+    if (window.location.pathname !== lastCheckedPath) {
+      lastCheckedPath = window.location.pathname;
+      cachedStageElements = null;
+      checkRoute();
+      setupPortalSidebar3Bars();
+      filterStudentSidebarItems();
+    }
+  }, 200);
 
 })();
