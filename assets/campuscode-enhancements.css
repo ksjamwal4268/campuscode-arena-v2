@@ -2805,6 +2805,7 @@ html body.student-portal-active .rulebot-input input {
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;
+    max-width: 100vw !important;
     min-height: 100vh !important;
     overflow-x: hidden !important;
     text-align: center !important;
@@ -2813,10 +2814,18 @@ html body.student-portal-active .rulebot-input input {
 
   .student-main,
   .organizer-main,
+  .organizer-page .organizer-main,
   .admin-main,
+  .admin-app .admin-main,
   .student-content,
+  .organizer-content,
+  .organizer-page .organizer-content,
   .org-content,
-  .admin-content {
+  .admin-content,
+  .admin-app .admin-content,
+  .org-view,
+  .admin-view,
+  .org-stack {
     margin-left: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
@@ -2827,17 +2836,21 @@ html body.student-portal-active .rulebot-input input {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
+    overflow-x: hidden !important;
   }
 
   .student-mobile-topbar,
   .student-topbar,
   .org-topbar,
-  .admin-topbar {
+  .organizer-page .org-topbar,
+  .admin-topbar,
+  .admin-app .admin-topbar {
     display: flex !important;
     position: sticky !important;
     top: 0 !important;
     height: 58px !important;
     width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box !important;
     z-index: 1000 !important;
     background: #080a0f !important;
@@ -2845,9 +2858,314 @@ html body.student-portal-active .rulebot-input input {
     -webkit-backdrop-filter: none !important;
     border-bottom: 1px solid rgba(168, 230, 46, 0.18) !important;
     padding: 0 14px 0 56px !important;
+    margin: 0 !important;
     align-items: center !important;
     justify-content: space-between !important;
     text-align: center !important;
+  }
+
+  .org-breadcrumb {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+  }
+
+  /* =========================================================================
+     ORGANIZER PORTAL — MOBILE PHONE CENTERING & RESPONSIVENESS (<= 780px)
+     ========================================================================= */
+  .org-hero,
+  .organizer-page .org-hero,
+  html body.organizer-portal-active .org-hero,
+  html body:has(.organizer-page) .org-hero {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto 16px auto !important;
+    padding: 22px 16px !important;
+    border-radius: 16px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    min-height: auto !important;
+  }
+
+  .org-hero h1,
+  .org-hero h2,
+  .org-hero p,
+  .org-hero span,
+  .org-hero .hero-create {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    align-self: center !important;
+    max-width: 100% !important;
+  }
+
+  .hero-create {
+    margin: 14px auto 0 auto !important;
+    width: 100% !important;
+    max-width: 260px !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .org-panel,
+  .organizer-page .org-panel,
+  .organizer-page .panel-card,
+  html body.organizer-portal-active .org-panel,
+  html body:has(.organizer-page) .org-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto 16px auto !important;
+    padding: 18px 14px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    border-radius: 16px !important;
+  }
+
+  .org-panel .panel-head,
+  .panel-head {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .org-panel .panel-head > div,
+  .panel-head > div {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+  }
+
+  .org-panel .panel-head h2,
+  .org-panel .panel-head h3,
+  .org-panel .panel-head p,
+  .panel-head h2,
+  .panel-head p,
+  .panel-head span {
+    text-align: center !important;
+    margin: 0 auto !important;
+  }
+
+  .metric-grid,
+  .hack-grid,
+  .organizer-team-grid,
+  .organizer-submission-list,
+  .organizer-ai-insight-grid,
+  .organizer-ai-metrics,
+  .organizer-review-form-grid,
+  .organizer-review-details,
+  .organizer-page .table-wrap,
+  .event-facts,
+  .hack-stats {
+    grid-template-columns: 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    align-items: center !important;
+    gap: 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  .metric-card,
+  .quick-card,
+  .hack-card,
+  .submission-card,
+  .round-card,
+  .organizer-team-card,
+  .organizer-round-submission-card,
+  .organizer-ai-insight,
+  .organizer-review-detail-card,
+  .team-card,
+  .project-card,
+  .round-tab {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto 12px auto !important;
+    padding: 16px 14px !important;
+  }
+
+  .hack-card > div,
+  .submission-card > div,
+  .round-card > div,
+  .metric-card strong,
+  .metric-card span,
+  .metric-card p,
+  .organizer-team-title,
+  .organizer-submission-problem,
+  .organizer-submission-meta {
+    text-align: center !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* =========================================================================
+     ADMIN PORTAL — MOBILE PHONE CENTERING & RESPONSIVENESS (<= 780px)
+     ========================================================================= */
+  .admin-page-title,
+  .admin-app .admin-page-title {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto 16px auto !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  .admin-page-title h1,
+  .admin-page-title p,
+  .admin-eyebrow,
+  .admin-kicker,
+  .admin-live-pill,
+  .admin-top-actions {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    align-self: center !important;
+    justify-content: center !important;
+  }
+
+  .admin-hero-grid,
+  .admin-stats-grid,
+  .admin-two-column,
+  .admin-command-grid,
+  .admin-event-grid,
+  .ai-command-layout,
+  .notification-layout,
+  .admin-approval-stack {
+    grid-template-columns: 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    align-items: center !important;
+    margin: 0 auto 16px auto !important;
+    gap: 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  .admin-command-card,
+  .admin-system-card,
+  .admin-panel-card,
+  .admin-card,
+  .admin-stat,
+  .admin-event-card,
+  .admin-approval-card,
+  .admin-create-org {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto 12px auto !important;
+    padding: 18px 14px !important;
+  }
+
+  .admin-stat-icon,
+  .admin-stat-label,
+  .admin-stat-number,
+  .admin-stat-detail,
+  .admin-command-tag,
+  .admin-command-meta,
+  .admin-command-content,
+  .admin-command-orbit,
+  .admin-card-head,
+  .admin-system-footer,
+  .admin-event-top,
+  .admin-event-meta,
+  .admin-event-actions {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    align-self: center !important;
+    justify-content: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .admin-toolbar,
+  .admin-search,
+  .admin-select-wrap,
+  .admin-table-wrap,
+  .admin-simple-list,
+  .admin-results-list,
+  .admin-activity-list {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+    gap: 10px !important;
+  }
+
+  .admin-table,
+  .admin-user-table {
+    display: block !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    box-sizing: border-box !important;
+  }
+
+  .admin-simple-row,
+  .admin-result-row,
+  .admin-activity-row,
+  .admin-list-row {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 12px 10px !important;
+    margin: 0 auto 8px auto !important;
+  }
+
+  .admin-btn-primary,
+  .admin-refresh,
+  .admin-logout {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    align-self: center !important;
   }
 
   .student-mobile-topbar .landing-logo,
