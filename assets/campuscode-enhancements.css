@@ -2624,8 +2624,12 @@ html body.student-portal-active .rulebot-input input {
     top: 14px !important;
     width: 38px !important;
     height: 38px !important;
+    z-index: 1000000 !important;
   }
 
+  /* Force sidebars off-screen on mobile by default with high specificity */
+  html body.student-portal-active .student-sidebar,
+  html body:has(.student-panel) .student-sidebar,
   .student-sidebar,
   .org-sidebar,
   .admin-sidebar {
@@ -2635,11 +2639,21 @@ html body.student-portal-active .rulebot-input input {
     bottom: 0 !important;
     width: 280px !important;
     max-width: 85vw !important;
+    height: 100vh !important;
     z-index: 999999 !important;
     transform: translateX(-100%) !important;
     margin-left: 0 !important;
+    box-shadow: 10px 0 35px rgba(0, 0, 0, 0.85) !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    display: flex !important;
   }
 
+  /* Slide sidebar into view when active/open */
+  html body.student-portal-active .student-sidebar.student-sidebar-open,
+  html body.student-portal-active .student-sidebar.open,
+  html body.student-portal-active .student-sidebar.is-open,
+  html body:has(.student-panel) .student-sidebar.student-sidebar-open,
+  html body:has(.student-panel) .student-sidebar.open,
   .student-sidebar.open,
   .student-sidebar.student-sidebar-open,
   .org-sidebar.is-open,
@@ -2650,17 +2664,142 @@ html body.student-portal-active .rulebot-input input {
     transform: translateX(0) !important;
   }
 
+  body.mobile-sidebar-open::before {
+    content: '' !important;
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    z-index: 999990 !important;
+    pointer-events: auto !important;
+    animation: fadeInBackdrop 0.2s ease-out forwards;
+  }
+
+  @keyframes fadeInBackdrop {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Main portal shells on mobile */
+  .student-panel,
+  .organizer-page,
+  .admin-app {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    overflow-x: hidden !important;
+  }
+
   .student-main,
   .organizer-main,
   .admin-main {
     margin-left: 0 !important;
     width: 100% !important;
+    min-height: calc(100vh - 64px) !important;
+    padding: 16px 14px 80px 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  .student-mobile-topbar {
+    display: flex !important;
+    position: sticky !important;
+    top: 0 !important;
+    height: 58px !important;
+    z-index: 1000 !important;
+    background: rgba(8, 10, 15, 0.95) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border-bottom: 1px solid rgba(168, 230, 46, 0.18) !important;
+    padding: 0 14px !important;
+    align-items: center !important;
+    justify-content: space-between !important;
   }
 
   .student-topbar,
   .org-topbar,
   .admin-topbar {
-    padding-left: 64px !important;
+    padding-left: 60px !important;
+  }
+
+  /* Single-column responsive grids for events, hackathons, and registrations */
+  .hackathon-grid,
+  .registration-grid,
+  .student-stat-grid,
+  .profile-grid,
+  .quiz-grid,
+  .certificates-grid,
+  .student-grid-2,
+  .student-grid-3 {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .hackathon-card,
+  .registration-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 18px 16px !important;
+    min-height: auto !important;
+    box-sizing: border-box !important;
+    border-radius: 14px !important;
+  }
+
+  .hackathon-card-top,
+  .registration-card > div {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .event-hub-tabs {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .event-hub-tab {
+    padding: 8px 14px !important;
+    font-size: 12px !important;
+  }
+
+  .student-hero {
+    padding: 20px 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .student-hero h1 {
+    font-size: clamp(24px, 7vw, 36px) !important;
+    line-height: 1.1 !important;
+  }
+
+  .student-hero p {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+
+  .student-panel-card {
+    padding: 18px 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    border-radius: 14px !important;
+  }
+
+  .student-sidebar-close {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 20px !important;
+    color: #a8e62e !important;
+    background: rgba(168, 230, 46, 0.12) !important;
+    border: 1px solid rgba(168, 230, 46, 0.3) !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    margin-bottom: 12px !important;
   }
 }
 

@@ -1046,8 +1046,21 @@
 
   // side panel is permanently visible by default on desktop, collapsible on click
   function setupHoverSlidebars() {
-    // Keep sidebar visible by default across all portals
-    document.body.classList.remove('sidebar-collapsed');
+    if (window.innerWidth <= 780) {
+      document.body.classList.add('sidebar-collapsed');
+      document.body.classList.remove('mobile-sidebar-open');
+      const sidebar = getActiveSidebar();
+      if (sidebar) {
+        sidebar.classList.remove('open', 'student-sidebar-open', 'is-open');
+        sidebar.classList.add('is-collapsed');
+      }
+    } else {
+      document.body.classList.remove('sidebar-collapsed', 'mobile-sidebar-open');
+      const sidebar = getActiveSidebar();
+      if (sidebar) {
+        sidebar.classList.remove('is-collapsed');
+      }
+    }
   }
 
   // navigation drawer / collapse toggle for student, organizer, and admin
@@ -1057,8 +1070,40 @@
 
     if (!isPortal) {
       if (existingBtn) existingBtn.remove();
-      document.body.classList.remove('sidebar-collapsed');
+      document.body.classList.remove('sidebar-collapsed', 'mobile-sidebar-open');
       return;
+    }
+
+    // Auto-close sidebar on mobile when clicking nav items or tapping outside drawer
+    if (!window.__ccSidebarAutoCloseBound) {
+      window.__ccSidebarAutoCloseBound = true;
+      document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 780) {
+          const sidebar = getActiveSidebar();
+          const trigger = document.getElementById('cc-3lines-trigger');
+          if (!sidebar) return;
+
+          // If clicked a nav item inside sidebar -> close drawer so user sees active page content
+          const navItem = e.target.closest('.student-nav-item, .org-nav-item, .admin-nav-item, nav button, nav a');
+          if (navItem && sidebar.contains(navItem)) {
+            document.body.classList.add('sidebar-collapsed');
+            document.body.classList.remove('mobile-sidebar-open');
+            sidebar.classList.remove('open', 'student-sidebar-open', 'is-open');
+            sidebar.classList.add('is-collapsed');
+            return;
+          }
+
+          // If clicked outside sidebar and outside hamburger trigger when drawer is open -> close drawer
+          if (!sidebar.contains(e.target) && (!trigger || !trigger.contains(e.target))) {
+            if (document.body.classList.contains('mobile-sidebar-open') || !document.body.classList.contains('sidebar-collapsed')) {
+              document.body.classList.add('sidebar-collapsed');
+              document.body.classList.remove('mobile-sidebar-open');
+              sidebar.classList.remove('open', 'student-sidebar-open', 'is-open');
+              sidebar.classList.add('is-collapsed');
+            }
+          }
+        }
+      }, true);
     }
 
     if (!existingBtn) {
@@ -1076,14 +1121,16 @@
 
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const isCollapsed = document.body.classList.toggle('sidebar-collapsed');
         const sidebar = getActiveSidebar();
+        const willBeCollapsed = !document.body.classList.contains('sidebar-collapsed');
+        document.body.classList.toggle('sidebar-collapsed', willBeCollapsed);
         if (sidebar) {
-          sidebar.classList.toggle('is-collapsed', isCollapsed);
+          sidebar.classList.toggle('is-collapsed', willBeCollapsed);
           if (window.innerWidth <= 780) {
-            sidebar.classList.toggle('open', !isCollapsed);
-            sidebar.classList.toggle('student-sidebar-open', !isCollapsed);
-            sidebar.classList.toggle('is-open', !isCollapsed);
+            document.body.classList.toggle('mobile-sidebar-open', !willBeCollapsed);
+            sidebar.classList.toggle('open', !willBeCollapsed);
+            sidebar.classList.toggle('student-sidebar-open', !willBeCollapsed);
+            sidebar.classList.toggle('is-open', !willBeCollapsed);
           }
         }
       });
