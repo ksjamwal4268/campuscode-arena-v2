@@ -2760,7 +2760,7 @@ html body.student-portal-active .rulebot-input input {
     to { opacity: 1; }
   }
 
-  /* Main portal shells on mobile */
+  /* Main portal shells on mobile - Perfectly Centered on Phone Viewports */
   .student-panel,
   .organizer-page,
   .admin-app {
@@ -2769,31 +2769,59 @@ html body.student-portal-active .rulebot-input input {
     width: 100% !important;
     min-height: 100vh !important;
     overflow-x: hidden !important;
+    text-align: center !important;
+    align-items: center !important;
   }
 
   .student-main,
   .organizer-main,
-  .admin-main {
+  .admin-main,
+  .student-content,
+  .org-content,
+  .admin-content {
     margin-left: 0 !important;
     width: 100% !important;
+    max-width: 100% !important;
     min-height: calc(100vh - 64px) !important;
     padding: 16px 14px 80px 14px !important;
     box-sizing: border-box !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
   }
 
-  .student-mobile-topbar {
+  .student-mobile-topbar,
+  .student-topbar,
+  .org-topbar,
+  .admin-topbar {
     display: flex !important;
     position: sticky !important;
     top: 0 !important;
     height: 58px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
     z-index: 1000 !important;
     background: #080a0f !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border-bottom: 1px solid rgba(168, 230, 46, 0.18) !important;
-    padding: 0 14px !important;
+    padding: 0 14px 0 56px !important;
     align-items: center !important;
     justify-content: space-between !important;
+    text-align: center !important;
+  }
+
+  .student-mobile-topbar .landing-logo,
+  .student-mobile-topbar > div:not(.user-chip),
+  .student-topbar .brand-logo,
+  .org-topbar .brand-logo,
+  .admin-topbar .brand-logo {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    margin: 0 auto !important;
   }
 
   .student-sidebar .student-nav-item,
@@ -2812,13 +2840,87 @@ html body.student-portal-active .rulebot-input input {
     opacity: 1 !important;
   }
 
-  .student-topbar,
-  .org-topbar,
-  .admin-topbar {
-    padding-left: 60px !important;
+  /* Centered Heroes and Headings on Mobile */
+  .student-hero,
+  .org-hero,
+  .admin-hero,
+  .student-workspace-header,
+  .student-page-header,
+  .student-panel-card,
+  .student-dashboard-discover {
+    text-align: center !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 100% !important;
+    padding: 20px 16px !important;
+    border-radius: 14px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
-  /* Single-column responsive grids for events, hackathons, and registrations */
+  .student-hero h1,
+  .student-hero h2,
+  .student-hero p,
+  .student-hero span,
+  .org-hero h1,
+  .org-hero h2,
+  .org-hero p,
+  .admin-hero h1,
+  .admin-hero h2,
+  .admin-hero p,
+  .student-main h1,
+  .student-main h2,
+  .student-main h3,
+  .student-main p,
+  .student-main span:not(.item-icon),
+  .organizer-main h1,
+  .organizer-main h2,
+  .organizer-main h3,
+  .organizer-main p,
+  .admin-main h1,
+  .admin-main h2,
+  .admin-main h3,
+  .admin-main p {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .student-hero h1 {
+    font-size: clamp(24px, 7vw, 36px) !important;
+    line-height: 1.15 !important;
+  }
+
+  .student-hero p {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    max-width: 90% !important;
+  }
+
+  /* Center category & filter tabs on Mobile */
+  .event-hub-tabs,
+  .student-tabs,
+  .portal-tabs,
+  .student-filter-row {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin: 0 auto 18px auto !important;
+    width: 100% !important;
+  }
+
+  .event-hub-tab {
+    padding: 8px 16px !important;
+    font-size: 12px !important;
+    border-radius: 20px !important;
+  }
+
+  /* Single-column centered responsive grids for events, hackathons, and registrations */
   .hackathon-grid,
   .registration-grid,
   .student-stat-grid,
@@ -2826,60 +2928,114 @@ html body.student-portal-active .rulebot-input input {
   .quiz-grid,
   .certificates-grid,
   .student-grid-2,
-  .student-grid-3 {
+  .student-grid-3,
+  .org-stat-grid,
+  .admin-stat-grid {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
     width: 100% !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    justify-items: center !important;
   }
 
   .hackathon-card,
-  .registration-card {
+  .registration-card,
+  .student-stat-card,
+  .student-panel-card,
+  .org-card,
+  .admin-card {
     width: 100% !important;
     max-width: 100% !important;
-    padding: 18px 16px !important;
+    padding: 20px 18px !important;
     min-height: auto !important;
     box-sizing: border-box !important;
     border-radius: 14px !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 
   .hackathon-card-top,
   .registration-card > div {
-    flex-wrap: wrap !important;
-    gap: 8px !important;
-  }
-
-  .event-hub-tabs {
     display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
     flex-wrap: wrap !important;
     gap: 8px !important;
-    margin-bottom: 16px !important;
-  }
-
-  .event-hub-tab {
-    padding: 8px 14px !important;
-    font-size: 12px !important;
-  }
-
-  .student-hero {
-    padding: 20px 16px !important;
-    border-radius: 14px !important;
-  }
-
-  .student-hero h1 {
-    font-size: clamp(24px, 7vw, 36px) !important;
-    line-height: 1.1 !important;
-  }
-
-  .student-hero p {
-    font-size: 13px !important;
-    line-height: 1.5 !important;
-  }
-
-  .student-panel-card {
-    padding: 18px 16px !important;
     width: 100% !important;
-    box-sizing: border-box !important;
-    border-radius: 14px !important;
+  }
+
+  .hackathon-card h2,
+  .hackathon-card h3,
+  .hackathon-card p,
+  .hackathon-card span,
+  .registration-card h2,
+  .registration-card h3,
+  .registration-card p,
+  .registration-card span {
+    text-align: center !important;
+  }
+
+  /* Centered action buttons inside cards */
+  .student-primary-btn,
+  .hackathon-card button,
+  .registration-card button,
+  .open-event-btn,
+  .student-hero button,
+  .student-btn {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  /* Center avatars and avatar groups */
+  .hackathon-card .avatar-group,
+  .hackathon-card-avatars,
+  .registration-card .avatar-group,
+  .student-hero .avatar-group,
+  .student-hero > div:has(.avatar),
+  .student-hero > div:has(img) {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 12px auto !important;
+  }
+
+  /* Center stat card numbers and labels */
+  .student-stat-card,
+  .org-stat-card,
+  .admin-stat-card {
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 18px 14px !important;
+  }
+
+  .student-stat-card strong,
+  .student-stat-card span,
+  .student-stat-card small,
+  .student-stat-card div {
+    text-align: center !important;
+    margin: 0 auto !important;
+  }
+
+  /* Center floating demo dropdown trigger on phone */
+  #demo-dropdown-container {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    bottom: 14px !important;
   }
 
   .student-sidebar-close {
